@@ -17,7 +17,7 @@ class Game():
 
         self.timers = {"MOVE" : Timer(SNAKE_TIME,self.snake.move),
                        "INPUT" : Timer(INPUT_TIME,self.input)}
-
+    
     def input(self):
         keys = pygame.key.get_pressed()
 
@@ -55,9 +55,11 @@ class Game():
         self.food.sprite = Food(self.food)
 
     def check_food(self):
+
         if(pygame.sprite.groupcollide(self.food,self.snake_sprites,False,False)):
             self.respawn_food()
             self.snake.append_part(self.snake_sprites)
+            set_score(len(self.snake.parts)-1)
 
     def check_self_collision(self):
         for part in self.snake.parts:
@@ -88,6 +90,3 @@ class Game():
         self.snake_sprites.draw(self.game_screen)
         self.food.draw(self.game_screen)
         
-
-
-

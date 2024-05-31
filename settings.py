@@ -22,5 +22,16 @@ GAME_COLOR = (120,45,12)
 PANEL_COLOR = (110,40,5)
 SNAKE_BODY_COLOR = (0,100,0)
 SNAKE_HEAD_COLOR = (0,200,0)
+FONT_COLOR = (255,255,255)
 
 FPS = 60
+
+#global variables
+SCORE = 0
+
+def set_score(score):
+    global SCORE
+    SCORE = score
+
+def get_score():
+    return SCORE
