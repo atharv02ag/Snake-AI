@@ -7,12 +7,11 @@ class Food(pygame.sprite.Sprite):
 
         super().__init__(group)
 
-        self.image = pygame.surface.Surface((PADDING,PADDING))
+        self.image = pygame.surface.Surface((GRID_CELL,GRID_CELL))
         self.image.fill((255,0,0))
         self.rect = self.image.get_rect()
-        self.x = randint(0,GAME_WIDTH-PADDING) #have to fix, spawn location not aligned with grid pattern
-        self.y = randint(0,GAME_HEIGHT-PADDING)
+        self.x = GRID_CELL*randint(0,GRID_DIM-1) 
+        self.y = GRID_CELL*randint(0,GRID_DIM-1)
         self.rect.topleft = (self.x,self.y)
-        self.eaten = False
 
         
