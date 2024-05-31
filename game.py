@@ -59,6 +59,18 @@ class Game():
             self.respawn_food()
             self.snake.append_part(self.snake_sprites)
 
+    def check_self_collision(self):
+        for part in self.snake.parts:
+            if(part != self.snake.head and pygame.sprite.collide_rect(part,self.snake.head)):
+                self.reset()
+                break
+
+    def reset(self):
+        self.respawn_food()
+        self.snake_sprites.empty()
+        self.snake = Snake(self.snake_sprites)
+        self.timers = {"MOVE" : Timer(SNAKE_TIME,self.snake.move),
+                       "INPUT" : Timer(INPUT_TIME,self.input)}
 
     def run(self):
 
@@ -66,6 +78,7 @@ class Game():
         self.timers["INPUT"].runTimer()
         self.check_boundary()
         self.check_food()
+        self.check_self_collision()
         
         self.screen.blit(self.game_screen, self.game_rect)
         self.game_screen.fill(GAME_COLOR) #VERY IMPORTANT : TO FILL OVER (CLEAR) CONTENTS OF PREVIOUS FRAME
