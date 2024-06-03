@@ -55,7 +55,6 @@ class Game():
         self.food.sprite = Food(self.food)
 
     def check_food(self):
-
         if(pygame.sprite.groupcollide(self.food,self.snake_sprites,False,False)):
             self.respawn_food()
             self.snake.append_part(self.snake_sprites)
@@ -68,6 +67,7 @@ class Game():
                 break
 
     def reset(self):
+        set_score(0)
         self.respawn_food()
         self.snake_sprites.empty()
         self.snake = Snake(self.snake_sprites)
@@ -89,4 +89,3 @@ class Game():
 
         self.snake_sprites.draw(self.game_screen)
         self.food.draw(self.game_screen)
-        
