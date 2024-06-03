@@ -10,6 +10,7 @@ class Game():
 
     def __init__(self):
         set_population(1)
+        set_score(0)
         self.game_screen = pygame.surface.Surface((GAME_WIDTH,GAME_HEIGHT))
         self.game_rect = self.game_screen.get_rect(bottomleft=(PADDING,(SCREEN_HEIGHT-PADDING)))
         self.screen = pygame.display.get_surface()
@@ -47,7 +48,7 @@ class Game():
         
         for i,snake in enumerate(self.snakes):
             displ = (snake.head.x-self.food.sprite.x)**2 + (snake.head.y-self.food.sprite.y)**2
-            output = self.neural_networks[i].activate((self.snakes[i].head.x, self.snakes[i].head.y, displ))
+            output = self.neural_networks[i].activate((self.snakes[i].head.x, self.snakes[i].head.y, self.food.sprite.x, self.food.sprite.y, displ))
 
             if(output[0]>0.5):
                 self.snakes[i].v_x = 0
@@ -87,13 +88,15 @@ class Game():
         self.food.sprite = Food(self.food)
 
     def check_food(self):
+        global_max = 0
         for i,snake_sprites in enumerate(self.snake_sprites_all):
             if(pygame.sprite.groupcollide(self.food,self.snake_sprites_all[i],False,False)):
                 print('food!')
                 self.respawn_food()
                 self.snakes[i].append_part(self.snake_sprites_all[i])
-                self.ge[i].fitness += 10
-                #set_score(len(self.snakes[i].parts)-1)
+                self.ge[i].fitness += 100
+                global_max = max(global_max,len(self.snakes[i].parts)-1)
+        set_score(global_max)
 
     def check_self_collision(self):
         for i,snake in enumerate(self.snakes):
@@ -109,7 +112,7 @@ class Game():
     def punishments(self):
         curr_time = pygame.time.get_ticks()
         for i,snake in enumerate(self.snakes):
-            if(curr_time-self.start_time >= 10000):
+            if(curr_time-self.start_time >= 5000):
                 displ = (snake.head.x-self.food.sprite.x)**2 + (snake.head.y-self.food.sprite.y)**2
                 if(displ>15000):
                     self.ge[i].fitness -= 0.1
