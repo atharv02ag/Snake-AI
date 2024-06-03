@@ -35,3 +35,12 @@ def set_score(score):
 
 def get_score():
     return SCORE
+
+POPULATION_SIZE = 1
+
+def set_population(size):
+    global POPULATION_SIZE
+    POPULATION_SIZE = size
+
+def get_population():
+    return POPULATION_SIZE

@@ -9,6 +9,7 @@ import neat.config
 class Game():
 
     def __init__(self):
+        set_population(1)
         self.game_screen = pygame.surface.Surface((GAME_WIDTH,GAME_HEIGHT))
         self.game_rect = self.game_screen.get_rect(bottomleft=(PADDING,(SCREEN_HEIGHT-PADDING)))
         self.screen = pygame.display.get_surface()
@@ -21,6 +22,7 @@ class Game():
         self.neural_networks = []
         self.timers_all = []
         self.ge = []
+        self.start_time = pygame.time.get_ticks()
 
     def init_neat(self,genomes,config):
         for x,g in genomes:
@@ -44,28 +46,28 @@ class Game():
     def input(self):
         
         for i,snake in enumerate(self.snakes):
-            output = self.neural_networks[i].activate((self.snakes[i].head.x, self.snakes[i].head.y, self.food.sprite.x, self.food.sprite.y))
+            displ = (snake.head.x-self.food.sprite.x)**2 + (snake.head.y-self.food.sprite.y)**2
+            output = self.neural_networks[i].activate((self.snakes[i].head.x, self.snakes[i].head.y, displ))
 
             if(output[0]>0.5):
                 self.snakes[i].v_x = 0
                 self.snakes[i].v_y = (-1)*GRID_CELL
-                self.snakes[i].head.dir = (0,-1)
-                self.ge[i].fitness += 0.1
+                self.snakes[i].head.dir = (0,-1)             
+            
             elif(output[1]>0.5):
                 self.snakes[i].v_x = 0
                 self.snakes[i].v_y = 1*GRID_CELL
                 self.snakes[i].head.dir = (0,1)
-                self.ge[i].fitness += 0.1
+                         
             elif(output[2]>0.5):
                 self.snakes[i].v_x = 1*GRID_CELL
                 self.snakes[i].v_y = 0
                 self.snakes[i].head.dir = (1,0)
-                self.ge[i].fitness += 0.1
+                            
             elif(output[3]>0.5):
                 self.snakes[i].v_x = (-1)*GRID_CELL
                 self.snakes[i].v_y = 0
-                self.snakes[i].head.dir = (-1,0)
-                self.ge[i].fitness += 0.1
+                self.snakes[i].head.dir = (-1,0)             
 
     def check_boundary(self):
         for snake in self.snakes:
@@ -86,8 +88,8 @@ class Game():
 
     def check_food(self):
         for i,snake_sprites in enumerate(self.snake_sprites_all):
-
             if(pygame.sprite.groupcollide(self.food,self.snake_sprites_all[i],False,False)):
+                print('food!')
                 self.respawn_food()
                 self.snakes[i].append_part(self.snake_sprites_all[i])
                 self.ge[i].fitness += 10
@@ -99,9 +101,32 @@ class Game():
                 if(part != self.snakes[i].head and pygame.sprite.collide_rect(part,self.snakes[i].head)):
                     self.ge[i].fitness -= 2
                     self.snakes.pop(i)
+                    self.snake_sprites_all.pop(i)
                     self.neural_networks.pop(i)
                     self.ge.pop(i)
                     break
+
+    def punishments(self):
+        curr_time = pygame.time.get_ticks()
+        for i,snake in enumerate(self.snakes):
+            if(curr_time-self.start_time >= 10000):
+                displ = (snake.head.x-self.food.sprite.x)**2 + (snake.head.y-self.food.sprite.y)**2
+                if(displ>15000):
+                    self.ge[i].fitness -= 0.1
+                else:
+                    self.ge[i].fitness += 0.1
+            if (curr_time-self.start_time >= 20000):
+                self.snakes.pop(i)
+                self.snake_sprites_all.pop(i)
+                self.neural_networks.pop(i)
+                self.ge.pop(i)
+            # if(curr_time-self.start_time >= 10000):
+            #     self.ge[i].fitness -= 2
+            #     self.snakes.pop(i)
+            #     self.snake_sprites_all.pop(i)
+            #     self.neural_networks.pop(i)
+            #     self.ge.pop(i)
+                
 
     # def reset(self):
     #     set_score(0)
@@ -113,10 +138,13 @@ class Game():
 
     def run(self):
 
+        set_population(len(self.snakes))
+
         for timers in self.timers_all:
             timers["MOVE"].runTimer()
             timers["INPUT"].runTimer()
 
+        self.punishments()
         self.check_boundary()
         self.check_food()
         self.check_self_collision()

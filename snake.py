@@ -26,11 +26,11 @@ class Snake(pygame.sprite.Sprite):
     def move(self):
         prev_pos = (self.head.x,self.head.y)
         prev_dir = self.head.dir
-    
+        
         for part in self.parts:
             if(part == self.head):
                 part.x += self.v_x
-                part.y += self.v_y
+                part.y += self.v_y     
             else:
                 temp_pos = (part.x,part.y)
                 (part.x,part.y) = prev_pos
@@ -39,7 +39,7 @@ class Snake(pygame.sprite.Sprite):
                 temp_dir = part.dir
                 part.dir = prev_dir
                 prev_dir = temp_dir
-    
+ 
     def append_part(self, group):
         last_part = self.parts[len(self.parts)-1]
         pos = (last_part.x-last_part.dir[0]*GRID_CELL, last_part.y-last_part.dir[1]*GRID_CELL)
