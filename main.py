@@ -47,7 +47,7 @@ def run(config_path):
     stats = neat.StatisticsReporter()
     pop.add_reporter(stats)
 
-    winner = pop.run(eval_genomes,50)
+    winner = pop.run(eval_genomes,500)
 
 if(__name__ == '__main__'):
 

@@ -87,6 +87,7 @@ class Game():
         for i,snake in enumerate(self.snakes):
             if(snake.head.x < 0): #left boundary 
                 snake.head.x = GAME_WIDTH-GRID_CELL
+                self.ge[i].fitness -= 2
                 self.snakes.pop(i)
                 self.snake_sprites_all.pop(i)
                 self.neural_networks.pop(i)
@@ -94,6 +95,7 @@ class Game():
 
             elif(snake.head.x > GAME_WIDTH-GRID_CELL): #right boundary
                 snake.head.x = 0
+                self.ge[i].fitness -= 2
                 self.snakes.pop(i)
                 self.snake_sprites_all.pop(i)
                 self.neural_networks.pop(i)
@@ -101,6 +103,7 @@ class Game():
 
             elif(snake.head.y < 0): #top boundary
                 snake.head.y = GAME_HEIGHT-GRID_CELL
+                self.ge[i].fitness -= 2
                 self.snakes.pop(i)
                 self.snake_sprites_all.pop(i)
                 self.neural_networks.pop(i)
@@ -108,6 +111,7 @@ class Game():
 
             elif(snake.head.y > GAME_HEIGHT-GRID_CELL): #bottom boundary
                 snake.head.y = 0
+                self.ge[i].fitness -= 2
                 self.snakes.pop(i)
                 self.snake_sprites_all.pop(i)
                 self.neural_networks.pop(i)
@@ -124,14 +128,14 @@ class Game():
                 self.respawn_food()
                 self.snakes[i].append_part(self.snake_sprites_all[i])
                 self.ge[i].fitness += 100
-                global_max = max(global_max,len(self.snakes[i].parts)-1)
+            global_max = max(global_max,len(self.snakes[i].parts)-1)
         set_score(global_max)
 
     def check_self_collision(self):
         for i,snake in enumerate(self.snakes):
             for part in self.snakes[i].parts:
                 if(part != self.snakes[i].head and pygame.sprite.collide_rect(part,self.snakes[i].head)):
-                    self.ge[i].fitness -= 2
+                    self.ge[i].fitness -= 10
                     self.snakes.pop(i)
                     self.snake_sprites_all.pop(i)
                     self.neural_networks.pop(i)
@@ -140,13 +144,12 @@ class Game():
 
     def punishments(self):
         curr_time = pygame.time.get_ticks()
-        for i,snake in enumerate(self.snakes):
-            # if(curr_time-self.start_time >= 5000):
-            #     displ = (snake.head.x-self.food.sprite.x)**2 + (snake.head.y-self.food.sprite.y)**2
-            #     if(displ>15000):
-            #         self.ge[i].fitness -= 0.2
-            #     else:
-            #         self.ge[i].fitness += 0.1
+        for i,snake in enumerate(self.snakes):           
+            displ = (snake.head.x-self.food.sprite.x)**2 + (snake.head.y-self.food.sprite.y)**2
+            if(displ>15000):
+                self.ge[i].fitness -= 0.02
+            else:
+                self.ge[i].fitness += 0.01
 
             # if (curr_time-self.start_time >= 20000):
             #     #print('ending')
@@ -157,11 +160,8 @@ class Game():
             # else:
             for ls in snake.visited:
                 for el in ls:
-                    if(el > 15 and el < 40):
-                        self.ge[i].fitness -= 0.1
-                    elif (el > 40 and el < 100):
-                        self.ge[i].fitness -= 0.4
-                    elif (el > 100):                      
+                    if (el > 80):
+                        self.ge[i].fitness -= 10                      
                         self.snakes.pop(i)
                         self.snake_sprites_all.pop(i)
                         self.neural_networks.pop(i)
