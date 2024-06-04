@@ -18,7 +18,7 @@ class Part(pygame.sprite.Sprite):
 class Snake(pygame.sprite.Sprite):
 
     def __init__(self,group):
-        self.head = Part(group,SNAKE_HEAD_COLOR,0,0,'r')
+        self.head = Part(group,SNAKE_HEAD_COLOR,0,0,(1,0))
         self.parts = [self.head]
         self.v_x = 1*GRID_CELL
         self.v_y = 0
