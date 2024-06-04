@@ -5,6 +5,7 @@ from timer import Timer
 
 import neat
 import neat.config
+import math
 
 class Game():
 
@@ -47,8 +48,20 @@ class Game():
     def input(self):
         
         for i,snake in enumerate(self.snakes):
-            displ = (snake.head.x-self.food.sprite.x)**2 + (snake.head.y-self.food.sprite.y)**2
-            output = self.neural_networks[i].activate((self.snakes[i].head.x, self.snakes[i].head.y, self.food.sprite.x, self.food.sprite.y, displ))
+            #displ = math.sqrt((snake.head.x-self.food.sprite.x)**2 + (snake.head.y-self.food.sprite.y)**2)
+            inp_1 = 0
+            inp_2 = 0
+            inp_3 = 0
+            inp_4 = 0
+            if(self.food.sprite.x == snake.head.x and self.food.sprite.y > snake.head.y):
+                inp_1 = 1
+            elif(self.food.sprite.x == snake.head.x and self.food.sprite.y < snake.head.y):
+                inp_2 = 1
+            elif(self.food.sprite.y == snake.head.y and self.food.sprite.x > snake.head.x):
+                inp_3 = 1
+            elif(self.food.sprite.y == snake.head.y and self.food.sprite.x < snake.head.x):
+                inp_4 = 1
+            output = self.neural_networks[i].activate((inp_1,inp_2,inp_3,inp_4))
 
             if(output[0]>0.5):
                 self.snakes[i].v_x = 0
@@ -71,19 +84,35 @@ class Game():
                 self.snakes[i].head.dir = (-1,0)             
 
     def check_boundary(self):
-        for snake in self.snakes:
+        for i,snake in enumerate(self.snakes):
             if(snake.head.x < 0): #left boundary 
                 snake.head.x = GAME_WIDTH-GRID_CELL
+                self.snakes.pop(i)
+                self.snake_sprites_all.pop(i)
+                self.neural_networks.pop(i)
+                self.ge.pop(i)
 
-            elif(snake.head.x > GAME_WIDTH): #right boundary
+            elif(snake.head.x > GAME_WIDTH-GRID_CELL): #right boundary
                 snake.head.x = 0
-            
+                self.snakes.pop(i)
+                self.snake_sprites_all.pop(i)
+                self.neural_networks.pop(i)
+                self.ge.pop(i)
+
             elif(snake.head.y < 0): #top boundary
                 snake.head.y = GAME_HEIGHT-GRID_CELL
-            
-            elif(snake.head.y > GAME_HEIGHT): #bottom boundary
-                snake.head.y = 0
+                self.snakes.pop(i)
+                self.snake_sprites_all.pop(i)
+                self.neural_networks.pop(i)
+                self.ge.pop(i)
 
+            elif(snake.head.y > GAME_HEIGHT-GRID_CELL): #bottom boundary
+                snake.head.y = 0
+                self.snakes.pop(i)
+                self.snake_sprites_all.pop(i)
+                self.neural_networks.pop(i)
+                self.ge.pop(i)
+                
     def respawn_food(self):
         self.food.sprite = Food(self.food)
 
@@ -112,24 +141,33 @@ class Game():
     def punishments(self):
         curr_time = pygame.time.get_ticks()
         for i,snake in enumerate(self.snakes):
-            if(curr_time-self.start_time >= 5000):
-                displ = (snake.head.x-self.food.sprite.x)**2 + (snake.head.y-self.food.sprite.y)**2
-                if(displ>15000):
-                    self.ge[i].fitness -= 0.1
-                else:
-                    self.ge[i].fitness += 0.1
-            if (curr_time-self.start_time >= 20000):
-                self.snakes.pop(i)
-                self.snake_sprites_all.pop(i)
-                self.neural_networks.pop(i)
-                self.ge.pop(i)
-            # if(curr_time-self.start_time >= 10000):
-            #     self.ge[i].fitness -= 2
+            # if(curr_time-self.start_time >= 5000):
+            #     displ = (snake.head.x-self.food.sprite.x)**2 + (snake.head.y-self.food.sprite.y)**2
+            #     if(displ>15000):
+            #         self.ge[i].fitness -= 0.2
+            #     else:
+            #         self.ge[i].fitness += 0.1
+
+            # if (curr_time-self.start_time >= 20000):
+            #     #print('ending')
             #     self.snakes.pop(i)
             #     self.snake_sprites_all.pop(i)
             #     self.neural_networks.pop(i)
             #     self.ge.pop(i)
-                
+            # else:
+            for ls in snake.visited:
+                for el in ls:
+                    if(el > 15 and el < 40):
+                        self.ge[i].fitness -= 0.1
+                    elif (el > 40 and el < 100):
+                        self.ge[i].fitness -= 0.4
+                    elif (el > 100):                      
+                        self.snakes.pop(i)
+                        self.snake_sprites_all.pop(i)
+                        self.neural_networks.pop(i)
+                        self.ge.pop(i)
+
+            
 
     # def reset(self):
     #     set_score(0)

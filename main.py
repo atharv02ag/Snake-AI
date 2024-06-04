@@ -10,7 +10,7 @@ import neat.config
 
 
 def eval_genomes(genomes,config):
-    print('started again')
+    
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
     clock = pygame.time.Clock()

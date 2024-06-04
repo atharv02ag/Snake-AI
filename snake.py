@@ -18,10 +18,11 @@ class Part(pygame.sprite.Sprite):
 class Snake(pygame.sprite.Sprite):
 
     def __init__(self,group):
-        self.head = Part(group,SNAKE_HEAD_COLOR,0,0,'r')
+        self.head = Part(group,SNAKE_HEAD_COLOR,0,0,(1,0))
         self.parts = [self.head]
         self.v_x = 1*GRID_CELL
         self.v_y = 0
+        self.visited = [[0 for i in range(0,GRID_DIM+1)] for j in range(0,GRID_DIM+1)]
 
     def move(self):
         prev_pos = (self.head.x,self.head.y)
@@ -39,9 +40,19 @@ class Snake(pygame.sprite.Sprite):
                 temp_dir = part.dir
                 part.dir = prev_dir
                 prev_dir = temp_dir
+        
+        self.update_visited()
  
     def append_part(self, group):
         last_part = self.parts[len(self.parts)-1]
-        pos = (last_part.x-last_part.dir[0]*GRID_CELL, last_part.y-last_part.dir[1]*GRID_CELL)
+        pos = (int(last_part.x)-int(last_part.dir[0]*GRID_CELL), int(last_part.y)-int(last_part.dir[1]*GRID_CELL))
         new_part = Part(group,SNAKE_BODY_COLOR,pos[0],pos[1],last_part.dir)
         self.parts.append(new_part)
+
+    def update_visited(self):
+        vis_x = int(self.head.x/GRID_CELL)
+        vis_y = int(self.head.y/GRID_CELL)
+        if(vis_x >=0 and vis_y >= 0 and vis_x <= 34 and vis_y <= 34):
+            #print(f"{vis_x}, {vis_y}")
+            self.visited[vis_x][vis_y] += 1
+        #print(self.visited)
