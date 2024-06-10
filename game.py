@@ -54,43 +54,59 @@ class Game():
         for i,snake in enumerate(self.snakes):
             #displ = math.sqrt((snake.head.x-self.food.sprite.x)**2 + (snake.head.y-self.food.sprite.y)**2)
             #print(f"{i} {snake.closer_to_food}")
-            inp_1 = 0
-            inp_2 = 0
-            inp_3 = 0
-            inp_4 = 0
-            # dist_r = GAME_WIDTH-snake.head.x
-            # dist_l = snake.head.x
-            # dist_u = snake.head.y
-            # dist_b = GAME_HEIGHT-snake.head.y
-            if(self.food.sprite.x == snake.head.x and self.food.sprite.y > snake.head.y):
-                inp_1 = (self.food.sprite.y - snake.head.y)
-            elif(self.food.sprite.x == snake.head.x and self.food.sprite.y < snake.head.y):
-                inp_2 = (snake.head.y - self.food.sprite.y)
-            elif(self.food.sprite.y == snake.head.y and self.food.sprite.x > snake.head.x):
-                inp_3 = (self.food.sprite.x - snake.head.x)
-            elif(self.food.sprite.y == snake.head.y and self.food.sprite.x < snake.head.x):
-                inp_4 = (snake.head.x - self.food.sprite.x)
+            # inp_1 = 0
+            # inp_2 = 0
+            # inp_3 = 0
+            # inp_4 = 0
+            dist_r = (GAME_WIDTH-snake.head.x)/GRID_CELL
+            dist_l = snake.head.x/GRID_CELL
+            dist_u = snake.head.y/GRID_CELL
+            dist_b = (GAME_HEIGHT-snake.head.y)/GRID_CELL
+            # if(self.food.sprite.x == snake.head.x and self.food.sprite.y > snake.head.y):
+            #     inp_1 = (self.food.sprite.y - snake.head.y)
+            # elif(self.food.sprite.x == snake.head.x and self.food.sprite.y < snake.head.y):
+            #     inp_2 = (snake.head.y - self.food.sprite.y)
+            # elif(self.food.sprite.y == snake.head.y and self.food.sprite.x > snake.head.x):
+            #     inp_3 = (self.food.sprite.x - snake.head.x)
+            # elif(self.food.sprite.y == snake.head.y and self.food.sprite.x < snake.head.x):
+            #     inp_4 = (snake.head.x - self.food.sprite.x)
             #inp_5 = 1 if (inp_1 or inp_2 or inp_3 or inp_4) else 0
-            output = self.neural_networks[i].activate((inp_1,inp_2,inp_3,inp_4))
-            if(output[0]>0.5):
-                self.snakes[i].v_x = 0
-                self.snakes[i].v_y = (-1)*GRID_CELL
-                self.snakes[i].head.dir = (0,-1)             
+
+            snake_to_food_vec = pygame.Vector2((self.food.sprite.x-self.snakes[i].head.x),(self.food.sprite.y-self.snakes[i].head.y))
+            food_distance = snake_to_food_vec.length()
+            food_angle = snake_to_food_vec.as_polar()[1]
+
+            directions = [(0,-1),(0,1),(1,0),(-1,0)]
+            opp_directions = {(0,-1) : (0,1), (0,1) : (0,-1),(1,0) : (-1,0),(-1,0) : (1,0)}
+
+            prev_direction = self.snakes[i].head.dir
+
+            output = self.neural_networks[i].activate((food_distance,food_angle,dist_r,dist_l,dist_u,dist_b))
+            direction = directions[output.index(max(output))]
+            if(prev_direction != (0,0) and opp_directions[prev_direction]==direction):
+                self.ge[i].fitness -= 1
             
-            elif(output[1]>0.5):
-                self.snakes[i].v_x = 0
-                self.snakes[i].v_y = 1*GRID_CELL
-                self.snakes[i].head.dir = (0,1)
+            (self.snakes[i].v_x, self.snakes[i].v_y) = (direction[0]*GRID_CELL,direction[1]*GRID_CELL)
+            self.snakes[i].head.dir = direction
+            # if(output[0]>0.5):
+            #     self.snakes[i].v_x = 0
+            #     self.snakes[i].v_y = (-1)*GRID_CELL
+            #     self.snakes[i].head.dir = (0,-1)             
+            
+            # elif(output[1]>0.5):
+            #     self.snakes[i].v_x = 0
+            #     self.snakes[i].v_y = 1*GRID_CELL
+            #     self.snakes[i].head.dir = (0,1)
                          
-            elif(output[2]>0.5):
-                self.snakes[i].v_x = 1*GRID_CELL
-                self.snakes[i].v_y = 0
-                self.snakes[i].head.dir = (1,0)
+            # elif(output[2]>0.5):
+            #     self.snakes[i].v_x = 1*GRID_CELL
+            #     self.snakes[i].v_y = 0
+            #     self.snakes[i].head.dir = (1,0)
                             
-            elif(output[3]>0.5):
-                self.snakes[i].v_x = (-1)*GRID_CELL
-                self.snakes[i].v_y = 0
-                self.snakes[i].head.dir = (-1,0)             
+            # elif(output[3]>0.5):
+            #     self.snakes[i].v_x = (-1)*GRID_CELL
+            #     self.snakes[i].v_y = 0
+            #     self.snakes[i].head.dir = (-1,0)             
 
     def check_boundary(self):
         for i,snake in enumerate(self.snakes):
@@ -154,9 +170,9 @@ class Game():
         curr_time = pygame.time.get_ticks()
         for i,snake in enumerate(self.snakes): 
             if(snake.closer_to_food == 1):
-                self.ge[i].fitness += 0.05
+                self.ge[i].fitness += 0.5
             else:
-                self.ge[i].fitness -= 0.05    
+                self.ge[i].fitness -= 0.5    
             # displ = (snake.head.x-self.food.sprite.x)**2 + (snake.head.y-self.food.sprite.y)**2
             # if(displ>10000):
             #     self.ge[i].fitness -= 0.02
@@ -173,7 +189,7 @@ class Game():
             for ls in snake.visited:
                 for el in ls:
                     if (el > 25):
-                        self.ge[i].fitness -= 15                      
+                        self.ge[i].fitness -= 50                     
                         self.snakes.pop(i)
                         self.snake_sprites_all.pop(i)
                         self.neural_networks.pop(i)
