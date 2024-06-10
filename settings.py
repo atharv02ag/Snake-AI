@@ -1,4 +1,5 @@
 import pygame
+pygame.mixer.init()
 
 SCREEN_WIDTH = 720
 SCREEN_HEIGHT = 800
@@ -18,13 +19,14 @@ PANEL_WIDTH = GAME_WIDTH
 PANEL_HEIGHT = SCREEN_HEIGHT-3*PADDING-GAME_HEIGHT
 
 BACKGROUND_COLOR = (30,30,30)
-GAME_COLOR = (120,45,12)
+GAME_COLOR = (126,217,87)
 PANEL_COLOR = (110,40,5)
 SNAKE_BODY_COLOR = (0,100,0)
 SNAKE_HEAD_COLOR = (0,200,0)
 FONT_COLOR = (255,255,255)
-
-FPS = 60
+EATSOUND=pygame.mixer.Sound("C:\codeforces\evensemproj\yaudio\munch.mp3")
+TURNSOUND=pygame.mixer.Sound("C:\codeforces\evensemproj\yaudio\Turning.mp3")
+FPS = 300
 
 #global variables
 SCORE = 0
