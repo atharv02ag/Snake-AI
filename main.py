@@ -7,6 +7,7 @@ from panel import Panel
 import os
 import neat
 import neat.config
+import visualize
 
 
 def eval_genomes(genomes,config):
@@ -48,6 +49,8 @@ def run(config_path):
     pop.add_reporter(stats)
 
     winner = pop.run(eval_genomes,500)
+    visualize.plot_stats(stats, ylog=False, view=True)
+    visualize.plot_species(stats, view=True) 
 
 if(__name__ == '__main__'):
 

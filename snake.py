@@ -17,8 +17,8 @@ class Part(pygame.sprite.Sprite):
 
 class Snake(pygame.sprite.Sprite):
 
-    def __init__(self,group):
-        self.head = Part(group,SNAKE_HEAD_COLOR,0,0,(1,0))
+    def __init__(self,group,x_init,y_init):
+        self.head = Part(group,SNAKE_HEAD_COLOR,x_init,y_init,(1,0))
         self.parts = [self.head]
         self.v_x = 1*GRID_CELL
         self.v_y = 0
@@ -52,7 +52,7 @@ class Snake(pygame.sprite.Sprite):
     def update_visited(self):
         vis_x = int(self.head.x/GRID_CELL)
         vis_y = int(self.head.y/GRID_CELL)
-        if(vis_x >=0 and vis_y >= 0 and vis_x <= 34 and vis_y <= 34):
+        if(vis_x >=0 and vis_y >= 0 and vis_x <= GRID_DIM and vis_y <= GRID_DIM):
             #print(f"{vis_x}, {vis_y}")
             self.visited[vis_x][vis_y] += 1
         #print(self.visited)
