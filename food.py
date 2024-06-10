@@ -7,7 +7,7 @@ class Food(pygame.sprite.Sprite):
 
         super().__init__(group)
 
-        self.image = pygame.transform.scale(pygame.image.load("C:\codeforces\evensemproj\images\gameapple.png"),(20,20))
+        self.image = pygame.transform.scale(pygame.image.load(".\images\gameapple.png"),(20,20))
         
         self.rect = self.image.get_rect()
         self.x = GRID_CELL*randint(0,GRID_DIM-1) 
