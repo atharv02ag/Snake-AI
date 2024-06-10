@@ -5,7 +5,7 @@ class Part(pygame.sprite.Sprite):
 
     def __init__(self,group,url,x,y,dir):
         super().__init__(group)
-        self.image = pygame.transform.scale(pygame.image.load(f"{url}"),(20,20))
+        self.image = pygame.transform.scale(pygame.image.load(f"{url}"),(GRID_CELL,GRID_CELL))
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
@@ -18,7 +18,7 @@ class Part(pygame.sprite.Sprite):
 class Snake(pygame.sprite.Sprite):
 
     def __init__(self,group):
-        self.head = Part(group,".\images\Graphics\head_right.png",0,0,'r')
+        self.head = Part(group,"./images/Graphics/head_right.png",0,0,(1,0))
         self.parts = [self.head]
         self.v_x = 1*GRID_CELL
         self.v_y = 0
@@ -45,9 +45,9 @@ class Snake(pygame.sprite.Sprite):
         last_part = self.parts[len(self.parts)-1]
         pos = (last_part.x-last_part.dir[0]*GRID_CELL, last_part.y-last_part.dir[1]*GRID_CELL)
         if(last_part.dir==(1,0) or last_part.dir==(-1,0)):
-            new_part = Part(group,".\images\Graphics\Body_horizontal.png",pos[0],pos[1],last_part.dir)
+            new_part = Part(group,"./images/Graphics/Body_horizontal.png",pos[0],pos[1],last_part.dir)
         else:
-            new_part = Part(group,".\images\Graphics\Body_vertical.png",pos[0],pos[1],last_part.dir)
+            new_part = Part(group,"./images/Graphics/Body_vertical.png",pos[0],pos[1],last_part.dir)
 
         self.parts.append(new_part)
     

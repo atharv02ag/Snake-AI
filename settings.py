@@ -24,8 +24,8 @@ PANEL_COLOR = (29, 194, 84)
 SNAKE_BODY_COLOR = (0,100,0)
 SNAKE_HEAD_COLOR = (0,200,0)
 FONT_COLOR = (255,255,255)
-EATSOUND=pygame.mixer.Sound(".\yaudio\munch.mp3")
-TURNSOUND=pygame.mixer.Sound(".\yaudio\Turning.mp3")
+EATSOUND=pygame.mixer.Sound("./yaudio/munch.mp3")
+TURNSOUND=pygame.mixer.Sound("./yaudio/Turning.mp3")
 FPS = 300
 
 #global variables

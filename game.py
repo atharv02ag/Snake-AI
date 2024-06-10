@@ -9,29 +9,29 @@ class Game():
         l=len(self.snake.parts)
         for i,part in enumerate(a):
             if(a[l-2].dir ==(1,0) and a[l-2].dir==a[l-1].dir and l>1):
-                a[l-1].image=pygame.transform.scale(pygame.image.load(".\images\Graphics\Tail_left.png"),(20,20))
+                a[l-1].image=pygame.transform.scale(pygame.image.load(".\images\Graphics\Tail_left.png"),(GRID_CELL,GRID_CELL))
             elif(a[l-2].dir ==(-1,0) and a[l-2].dir==a[l-1].dir and l>1):
-                a[l-1].image=pygame.transform.scale(pygame.image.load(".\images\Graphics\Tail_right.png"),(20,20))
+                a[l-1].image=pygame.transform.scale(pygame.image.load(".\images\Graphics\Tail_right.png"),(GRID_CELL,GRID_CELL))
             elif(a[l-2].dir ==(0,1) and a[l-2].dir==a[l-1].dir and l>1):
-                a[l-1].image=pygame.transform.scale(pygame.image.load(".\images\Graphics\Tail_up.png"),(20,20))
+                a[l-1].image=pygame.transform.scale(pygame.image.load(".\images\Graphics\Tail_up.png"),(GRID_CELL,GRID_CELL))
             elif(a[l-2].dir ==(0,-1) and a[l-2].dir==a[l-1].dir and l>1):
-                a[l-1].image=pygame.transform.scale(pygame.image.load(".\images\Graphics\Tail_down.png"),(20,20))
+                a[l-1].image=pygame.transform.scale(pygame.image.load(".\images\Graphics\Tail_down.png"),(GRID_CELL,GRID_CELL))
             
             if(i<l-1 and a[i].dir==a[i+1].dir):
                 if(a[i].dir==(1,0) or a[i].dir==(-1,0)):
-                    a[i+1].image=pygame.transform.scale(pygame.image.load(".\images\Graphics\Body_horizontal.png"),(20,20))
+                    a[i+1].image=pygame.transform.scale(pygame.image.load(".\images\Graphics\Body_horizontal.png"),(GRID_CELL,GRID_CELL))
 
                 else:
-                    a[i+1].image=pygame.transform.scale(pygame.image.load(".\images\Graphics\Body_vertical.png"),(20,20))
+                    a[i+1].image=pygame.transform.scale(pygame.image.load(".\images\Graphics\Body_vertical.png"),(GRID_CELL,GRID_CELL))
             elif(i<l-1 and i>0 and a[i].dir != a[i+1].dir):
                 if((a[i].dir==(1,0) and a[i+1].dir==(0,-1)) or (a[i].dir==(0,1) and a[i+1].dir==(-1,0))):
-                    a[i].image=pygame.transform.scale(pygame.image.load(".\images\Graphics\Body_bottomright.png"),(20,20))
+                    a[i].image=pygame.transform.scale(pygame.image.load(".\images\Graphics\Body_bottomright.png"),(GRID_CELL,GRID_CELL))
                 elif((a[i].dir==(-1,0) and a[i+1].dir==(0,-1)) or (a[i].dir==(0,1) and a[i+1].dir==(1,0))):
-                    a[i].image=pygame.transform.scale(pygame.image.load(".\images\Graphics\Body_bottomleft.png"),(20,20))
+                    a[i].image=pygame.transform.scale(pygame.image.load(".\images\Graphics\Body_bottomleft.png"),(GRID_CELL,GRID_CELL))
                 elif((a[i].dir==(1,0) and a[i+1].dir==(0,1)) or (a[i].dir==(0,-1) and a[i+1].dir==(-1,0))):
-                    a[i].image=pygame.transform.scale(pygame.image.load(".\images\Graphics\Body_topright.png"),(20,20))
+                    a[i].image=pygame.transform.scale(pygame.image.load(".\images\Graphics\Body_topright.png"),(GRID_CELL,GRID_CELL))
                 elif((a[i].dir==(-1,0) and a[i+1].dir==(0,1)) or (a[i].dir==(0,-1) and a[i+1].dir==(1,0))):
-                    a[i].image=pygame.transform.scale(pygame.image.load(".\images\Graphics\Body_topleft.png"),(20,20))
+                    a[i].image=pygame.transform.scale(pygame.image.load(".\images\Graphics\Body_topleft.png"),(GRID_CELL,GRID_CELL))
                 
 
     def __init__(self):
@@ -54,37 +54,37 @@ class Game():
             self.snake.v_x = 0
             self.snake.v_y = (-1)*GRID_CELL
             self.snake.head.dir = (0,-1)
-            self.snake.head.image=pygame.transform.scale(pygame.image.load(".\images\Graphics\head_up.png"),(20,20))
+            self.snake.head.image=pygame.transform.scale(pygame.image.load("./images/Graphics/head_up.png"),(GRID_CELL,GRID_CELL))
             TURNSOUND.play()
         elif(keys[pygame.K_DOWN]):
             self.snake.v_x = 0
             self.snake.v_y = 1*GRID_CELL
             self.snake.head.dir = (0,1)
-            self.snake.head.image=pygame.transform.scale(pygame.image.load(".\images\Graphics\head_down.png"),(20,20))
+            self.snake.head.image=pygame.transform.scale(pygame.image.load("./images/Graphics/head_down.png"),(GRID_CELL,GRID_CELL))
             TURNSOUND.play()
             
         elif(keys[pygame.K_RIGHT]):
             self.snake.v_x = 1*GRID_CELL
             self.snake.v_y = 0
             self.snake.head.dir = (1,0)
-            self.snake.head.image=pygame.transform.scale(pygame.image.load(".\images\Graphics\head_right.png"),(20,20))
+            self.snake.head.image=pygame.transform.scale(pygame.image.load("./images/Graphics/head_right.png"),(GRID_CELL,GRID_CELL))
             TURNSOUND.play()
             for index,part in enumerate(self.snake.parts):
                 if(index==0):
                     continue
                 elif(self.snake.head.dir==part.dir):
-                    part.image=pygame.transform.scale(pygame.image.load(".\images\Graphics\Body_horizontal.png"),(20,20))
+                    part.image=pygame.transform.scale(pygame.image.load("./images/Graphics/Body_horizontal.png"),(GRID_CELL,GRID_CELL))
        
         elif(keys[pygame.K_LEFT]):
             self.snake.v_x = (-1)*GRID_CELL
             self.snake.v_y = 0
             self.snake.head.dir = (-1,0)
-            self.snake.head.image=pygame.transform.scale(pygame.image.load(".\images\Graphics\head_left.png"),(20,20))
+            self.snake.head.image=pygame.transform.scale(pygame.image.load("./images/Graphics/head_left.png"),(GRID_CELL,GRID_CELL))
             for index,part in enumerate(self.snake.parts):
                 if(index==0):
                     continue
                 elif(self.snake.head.dir==part.dir):
-                    part.image=pygame.transform.scale(pygame.image.load(".\images\Graphics\Body_horizontal.png"),(20,20))
+                    part.image=pygame.transform.scale(pygame.image.load("./images/Graphics/Body_horizontal.png"),(GRID_CELL,GRID_CELL))
             TURNSOUND.play()
 
     def check_boundary(self):
@@ -118,6 +118,7 @@ class Game():
                 break
 
     def reset(self):
+        set_score(0)
         self.respawn_food()
         self.snake_sprites.empty()
         self.snake = Snake(self.snake_sprites)
