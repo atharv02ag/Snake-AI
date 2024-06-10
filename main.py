@@ -2,6 +2,7 @@ from sys import exit
 from settings import *
 from game import Game
 from panel import Panel
+pygame.mixer.init()
 
 class Main():
     def __init__(self):
@@ -24,6 +25,7 @@ class Main():
 
             self.game.run()
             self.panel.run()
+            self.game.snake_body_dir()
 
             pygame.display.update()
             self.clock.tick(FPS)
