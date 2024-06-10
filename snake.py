@@ -23,11 +23,15 @@ class Snake(pygame.sprite.Sprite):
         self.v_x = 1*GRID_CELL
         self.v_y = 0
         self.visited = [[0 for i in range(0,GRID_DIM+1)] for j in range(0,GRID_DIM+1)]
+        self.closer_to_food = 0
 
-    def move(self):
+    #if move() went closer to x,y returns 1 else 0
+    def move(self,x,y):
         prev_pos = (self.head.x,self.head.y)
         prev_dir = self.head.dir
-        
+
+        dist1 = abs(self.head.x-x) + abs(self.head.y-y)
+
         for part in self.parts:
             if(part == self.head):
                 part.x += self.v_x
@@ -40,6 +44,10 @@ class Snake(pygame.sprite.Sprite):
                 temp_dir = part.dir
                 part.dir = prev_dir
                 prev_dir = temp_dir
+        
+        dist2 = abs(self.head.x-x) + abs(self.head.y-y)
+
+        self.closer_to_food = 1 if(dist2<dist1) else 0
         
         self.update_visited()
  

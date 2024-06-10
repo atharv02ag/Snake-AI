@@ -6,7 +6,6 @@ from random import randint
 
 import neat
 import neat.config
-import math
 
 class Game():
 
@@ -50,18 +49,19 @@ class Game():
             self.ge.append(g)
 
     
-    def input(self):
+    def input(self,x=0,y=0):
         
         for i,snake in enumerate(self.snakes):
             #displ = math.sqrt((snake.head.x-self.food.sprite.x)**2 + (snake.head.y-self.food.sprite.y)**2)
+            #print(f"{i} {snake.closer_to_food}")
             inp_1 = 0
             inp_2 = 0
             inp_3 = 0
             inp_4 = 0
-            dist_r = GAME_WIDTH-snake.head.x
-            dist_l = snake.head.x
-            dist_u = snake.head.y
-            dist_b = GAME_HEIGHT-snake.head.y
+            # dist_r = GAME_WIDTH-snake.head.x
+            # dist_l = snake.head.x
+            # dist_u = snake.head.y
+            # dist_b = GAME_HEIGHT-snake.head.y
             if(self.food.sprite.x == snake.head.x and self.food.sprite.y > snake.head.y):
                 inp_1 = (self.food.sprite.y - snake.head.y)
             elif(self.food.sprite.x == snake.head.x and self.food.sprite.y < snake.head.y):
@@ -71,7 +71,7 @@ class Game():
             elif(self.food.sprite.y == snake.head.y and self.food.sprite.x < snake.head.x):
                 inp_4 = (snake.head.x - self.food.sprite.x)
             #inp_5 = 1 if (inp_1 or inp_2 or inp_3 or inp_4) else 0
-            output = self.neural_networks[i].activate((inp_1,inp_2,inp_3,inp_4,dist_r,dist_l,dist_u,dist_b))
+            output = self.neural_networks[i].activate((inp_1,inp_2,inp_3,inp_4))
             if(output[0]>0.5):
                 self.snakes[i].v_x = 0
                 self.snakes[i].v_y = (-1)*GRID_CELL
@@ -152,7 +152,11 @@ class Game():
 
     def punishments(self):
         curr_time = pygame.time.get_ticks()
-        for i,snake in enumerate(self.snakes):           
+        for i,snake in enumerate(self.snakes): 
+            if(snake.closer_to_food == 1):
+                self.ge[i].fitness += 0.05
+            else:
+                self.ge[i].fitness -= 0.05    
             # displ = (snake.head.x-self.food.sprite.x)**2 + (snake.head.y-self.food.sprite.y)**2
             # if(displ>10000):
             #     self.ge[i].fitness -= 0.02
@@ -190,7 +194,7 @@ class Game():
         set_population(len(self.snakes))
 
         for timers in self.timers_all:
-            timers["MOVE"].runTimer()
+            timers["MOVE"].runTimer(x=self.food.sprite.x,y=self.food.sprite.y)
             timers["INPUT"].runTimer()
 
         self.punishments()
