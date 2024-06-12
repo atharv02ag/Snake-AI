@@ -4,6 +4,7 @@ from game import Game
 from panel import Panel
 from collections import deque
 from model import QTrainer, Linear_Qnet
+from IPython import display
 
 import torch
 import random
@@ -12,8 +13,8 @@ import matplotlib.pyplot as plt
 
 MAX_MEMORY = 100000
 BATCH_SIZE = 1000
-LR = 0.002
-EPSILON = 0.45
+LR = 0.001
+EPSILON = 0.42
 
 class Agent():
     def __init__(self):
@@ -25,8 +26,9 @@ class Agent():
         self.lr = LR
         self.game_count = 0
         self.memory = deque(maxlen=MAX_MEMORY)
-        self.model = Linear_Qnet(input_size=11,hidden_size=256,output_size=3)
-        self.trainer = QTrainer(self.model,self.lr,self.gamma)
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        self.model = Linear_Qnet(input_size=11,hidden_size=256,output_size=3,device = self.device)
+        self.trainer = QTrainer(self.model,self.lr,self.gamma,self.device)
     
     def remember(self,curr_state,action,next_state,reward,game_over):
         self.memory.append((curr_state,action,next_state,reward,game_over))
@@ -38,25 +40,34 @@ class Agent():
         batch = min(len(self.memory),BATCH_SIZE)
         sample = random.sample(self.memory,batch)
 
-        states, actions, rewards, next_states, game_overs = zip(*sample)
-        self.trainer.train_step(states, actions, rewards, next_states, game_overs)
+        states, actions, next_states, rewards, game_overs = zip(*sample)
+        self.trainer.train_step(states, actions, next_states, rewards, game_overs)
     
     def get_action(self,curr_state):
         action = [0,0,0]
-        self.epsilon = EPSILON*(1-(self.game_count/400)) + 0.01
+        self.epsilon = EPSILON*(1-(self.game_count/500))
         if(random.random() < self.epsilon):
             action[random.randint(0,2)]=1
         else:
-            curr_state = torch.tensor(curr_state,dtype=torch.float)
+            curr_state = torch.tensor(curr_state,dtype=torch.float).to(self.device)
             Q_pred = self.model(curr_state)
             action[torch.argmax(Q_pred).item()] = 1
         
         return action
-
+    
+def plot(x,y,xlabel,ylabel):
+    plt.clf()
+    plt.plot(x,y)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.title("Performance on Deep Q-learning")
+    plt.show()
+    plt.pause(0.1)
 
 def train():
-
+    plt.ion()
     pygame.init()
+    pygame.display.set_caption('snake game')
     screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
     clock = pygame.time.Clock()
     agent = Agent()
@@ -87,8 +98,7 @@ def train():
             agent.game_count += 1
             game_num.append(agent.game_count)
             score_list.append(get_score())
-            print(agent.game_count)
-            #plot(game_num,score_list,"game number","score")
+            plot(game_num,score_list,"game count","score")
             agent.game.reset()
 
         agent.game.render_ui()

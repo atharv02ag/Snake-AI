@@ -5,41 +5,42 @@ import torch.optim as optim
 
 
 class Linear_Qnet(nn.Module):
-    def __init__(self,input_size,hidden_size,output_size):
+    def __init__(self,input_size,hidden_size,output_size,device):
         super().__init__()
         self.linear1 = nn.Linear(input_size,hidden_size)
         self.linear2 = nn.Linear(hidden_size,output_size)
+        self.to(device)
 
-    def forward(self, x):
-        x = F.relu(self.linear1(x))
+    def forward(self, state):
+        x = F.relu(self.linear1(state))
         x = self.linear2(x)
         return x
 
 class QTrainer():
-    def __init__(self,model,lr,gamma):
+    def __init__(self,model,lr,gamma,device):
         self.lr = lr
         self.gamma = gamma
         self.model = model
         self.optimizer = optim.Adam(model.parameters(),lr=lr)
         self.criterion = nn.MSELoss()
-        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        self.device = device
     
     def train_step(self,curr_state,action,next_state,reward,game_over):
-        curr_state = torch.tensor(curr_state,dtype=torch.float)
+        curr_state = torch.tensor(curr_state,dtype=torch.float).to(self.device)
         action = torch.tensor(action,dtype=torch.long).to(self.device)
-        next_state = torch.tensor(next_state,dtype=torch.float)
-        reward = torch.tensor(reward,dtype=torch.float)
+        next_state = torch.tensor(next_state,dtype=torch.float).to(self.device)
+        reward = torch.tensor(reward,dtype=torch.float).to(self.device)
 
         if(len(curr_state.shape) == 1):
             curr_state = torch.unsqueeze(curr_state,dim=0)
             action = torch.unsqueeze(action,dim=0)
             next_state = torch.unsqueeze(next_state,dim=0)
             reward = torch.unsqueeze(reward,dim=0)
-            game_over = (game_over,)
+            game_over = [game_over]
 
         old_Q = self.model(curr_state)
 
-        target = old_Q.clone()
+        Q_target = old_Q.clone()
         for i in range(0,len(curr_state)):
             new_Q = 0
             if(game_over[i]):
@@ -49,10 +50,10 @@ class QTrainer():
                 new_Q = reward[i] + self.gamma*(max(self.model(next_state[i])))
             #can assume output of nn is encoded as (Q1,[1,0,0]), (Q2,[0,1,0]), (Q3,[0,0,1])
             #from curr_state to next_state say we took action [0,1,0], then Q2 must have been the maximum Q value among Q1,Q2,Q3
-            target[i][torch.argmax(action).item()] = new_Q
+            Q_target[i][torch.argmax(action[i]).item()] = new_Q
 
         self.optimizer.zero_grad()
-        loss = self.criterion(target,old_Q).to(self.device)
+        loss = self.criterion(Q_target,old_Q).to(self.device)
         loss.backward()
         self.optimizer.step()
 
