@@ -114,12 +114,8 @@ class Game():
         self.snake.move()
 
         boundary_reward,boundary_game_over = self.check_boundary()
+        collision_reward, collision_game_over = self.check_self_collision()
         food_reward = self.check_food()
-        collision_reward = 0
-        collision_game_over = False
-
-        if(food_reward != 0):
-            collision_reward, collision_game_over = self.check_self_collision()
         
         reward = boundary_reward + food_reward + collision_reward
         game_over = boundary_game_over or collision_game_over

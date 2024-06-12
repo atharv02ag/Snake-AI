@@ -11,7 +11,7 @@ import random
 
 MAX_MEMORY = 100000
 BATCH_SIZE = 1000
-LR = 0.001
+LR = 0.002
 EPSILON = 0.4
 
 class Agent():
@@ -82,6 +82,7 @@ def train():
             agent.train_replay_memory()
             agent.game_count += 1
             agent.game.reset()
+            print(agent.game_count)
 
         agent.game.render_ui()
         agent.panel.run()
