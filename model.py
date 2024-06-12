@@ -22,11 +22,11 @@ class QTrainer():
         self.model = model
         self.optimizer = optim.Adam(model.parameters(),lr=lr)
         self.criterion = nn.MSELoss()
-        self.device = torch.device("cuda") if (torch.cuda.is_available()) else torch.device("cpu")
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     
     def train_step(self,curr_state,action,next_state,reward,game_over):
         curr_state = torch.tensor(curr_state,dtype=torch.float)
-        action = torch.tensor(action,dtype=torch.long)
+        action = torch.tensor(action,dtype=torch.long).to(self.device)
         next_state = torch.tensor(next_state,dtype=torch.float)
         reward = torch.tensor(reward,dtype=torch.float)
 
@@ -52,7 +52,7 @@ class QTrainer():
             target[i][torch.argmax(action).item()] = new_Q
 
         self.optimizer.zero_grad()
-        loss = self.criterion(target,old_Q)
+        loss = self.criterion(target,old_Q).to(self.device)
         loss.backward()
         self.optimizer.step()
 

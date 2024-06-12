@@ -7,12 +7,13 @@ from model import QTrainer, Linear_Qnet
 
 import torch
 import random
+import matplotlib.pyplot as plt
 
 
 MAX_MEMORY = 100000
 BATCH_SIZE = 1000
 LR = 0.002
-EPSILON = 0.4
+EPSILON = 0.45
 
 class Agent():
     def __init__(self):
@@ -21,7 +22,7 @@ class Agent():
         self.game_over = False
         self.epsilon = EPSILON
         self.gamma = 0.9
-        self.lr = 0.001
+        self.lr = LR
         self.game_count = 0
         self.memory = deque(maxlen=MAX_MEMORY)
         self.model = Linear_Qnet(input_size=11,hidden_size=256,output_size=3)
@@ -42,7 +43,7 @@ class Agent():
     
     def get_action(self,curr_state):
         action = [0,0,0]
-        self.epsilon = EPSILON*(1-(self.game_count/200))
+        self.epsilon = EPSILON*(1-(self.game_count/400)) + 0.01
         if(random.random() < self.epsilon):
             action[random.randint(0,2)]=1
         else:
@@ -59,6 +60,9 @@ def train():
     screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
     clock = pygame.time.Clock()
     agent = Agent()
+
+    game_num = []
+    score_list = []
 
     running = True
     while(running):
@@ -81,8 +85,11 @@ def train():
         if(agent.game_over):
             agent.train_replay_memory()
             agent.game_count += 1
-            agent.game.reset()
+            game_num.append(agent.game_count)
+            score_list.append(get_score())
             print(agent.game_count)
+            #plot(game_num,score_list,"game number","score")
+            agent.game.reset()
 
         agent.game.render_ui()
         agent.panel.run()

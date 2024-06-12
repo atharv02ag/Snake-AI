@@ -1,7 +1,7 @@
 from settings import *
 from food import Food
 from snake import Snake
-from timer import Timer
+from numpy import array as np_array
 
 class Game():
 
@@ -39,7 +39,7 @@ class Game():
     def respawn_food(self):
         self.food.sprite = Food(self.food)
 
-    def check_food(self): #TODO adding part somehow causing collision with self
+    def check_food(self):
         reward = 0
         if(pygame.sprite.groupcollide(self.food,self.snake_sprites,False,False)):
             self.respawn_food()
@@ -53,7 +53,6 @@ class Game():
         game_over = False
         for part in self.snake.parts:
             if(part != self.snake.head and pygame.sprite.collide_rect(part,self.snake.head)):
-                #self.reset()
                 reward = -10
                 game_over = True
                 break
@@ -107,7 +106,7 @@ class Game():
             boundary[2] = 1 if(y-GRID_CELL<0) else 0
         
         state = dir + food_pos + boundary
-        return state
+        return np_array(state)
         
     def take_step(self,action):
         self.take_action(action)
