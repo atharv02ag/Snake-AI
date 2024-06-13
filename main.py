@@ -48,7 +48,7 @@ def run(config_path):
     stats = neat.StatisticsReporter()
     pop.add_reporter(stats)
 
-    winner = pop.run(eval_genomes,500)
+    winner = pop.run(eval_genomes,5)
     visualize.plot_stats(stats, ylog=False, view=True)
     visualize.plot_species(stats, view=True) 
 
