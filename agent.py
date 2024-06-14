@@ -4,7 +4,6 @@ from game import Game
 from panel import Panel
 from collections import deque
 from model import QTrainer, Linear_Qnet
-from IPython import display
 
 import torch
 import random
@@ -14,7 +13,8 @@ import matplotlib.pyplot as plt
 MAX_MEMORY = 100000
 BATCH_SIZE = 1000
 LR = 0.001
-EPSILON = 0.42
+EPSILON = 0.35
+MAX_GAME_COUNT = 500
 
 class Agent():
     def __init__(self):
@@ -45,7 +45,7 @@ class Agent():
     
     def get_action(self,curr_state):
         action = [0,0,0]
-        self.epsilon = EPSILON*(1-(self.game_count/500))
+        self.epsilon = EPSILON*(1-(self.game_count/350))
         if(random.random() < self.epsilon):
             action[random.randint(0,2)]=1
         else:
@@ -62,12 +62,10 @@ def plot(x,y,xlabel,ylabel):
     plt.ylabel(ylabel)
     plt.title("Performance on Deep Q-learning")
     plt.show()
-    plt.pause(0.1)
 
 def train():
-    plt.ion()
     pygame.init()
-    pygame.display.set_caption('snake game')
+    pygame.display.set_caption('Snake Game on Deep Q-Learning')
     screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
     clock = pygame.time.Clock()
     agent = Agent()
@@ -80,8 +78,15 @@ def train():
         for event in pygame.event.get():
             if(event.type == pygame.QUIT):
                 running = False
+                plot(game_num,score_list,"game count","score")
                 pygame.quit()
                 exit()
+
+        if(agent.game_count >= MAX_GAME_COUNT):
+            running = False
+            plot(game_num,score_list,"game count","score")
+            pygame.quit()
+            exit()
         
         screen.fill(BACKGROUND_COLOR)
 
@@ -98,11 +103,10 @@ def train():
             agent.game_count += 1
             game_num.append(agent.game_count)
             score_list.append(get_score())
-            plot(game_num,score_list,"game count","score")
             agent.game.reset()
 
         agent.game.render_ui()
-        agent.panel.run()
+        agent.panel.run(agent.game_count)
 
         pygame.display.update()
         clock.tick(FPS)
