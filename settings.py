@@ -40,3 +40,21 @@ def set_population(size):
 
 def get_population():
     return POPULATION_SIZE
+
+GENERATION_COUNT = 0
+
+def incr_gen():
+    global GENERATION_COUNT
+    GENERATION_COUNT += 1
+
+def get_gen():
+    return GENERATION_COUNT
+
+MAX_SCORE = 0
+
+def set_max_score(score):
+    global MAX_SCORE    
+    MAX_SCORE = score   
+
+def get_max_score():
+    return MAX_SCORE

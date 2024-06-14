@@ -29,12 +29,13 @@ def eval_genomes(genomes,config):
                 exit()
             elif(get_population() == 0):
                 running = False
+                incr_gen()
                 break
         
         screen.fill(BACKGROUND_COLOR)
 
         game.run()
-        panel.run()
+        panel.run(get_gen())
 
         pygame.display.update()
         clock.tick(FPS)
@@ -48,7 +49,7 @@ def run(config_path):
     stats = neat.StatisticsReporter()
     pop.add_reporter(stats)
 
-    winner = pop.run(eval_genomes,5)
+    winner = pop.run(eval_genomes,275)
     visualize.plot_stats(stats, ylog=False, view=True)
     visualize.plot_species(stats, view=True) 
 
