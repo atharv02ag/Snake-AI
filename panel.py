@@ -3,6 +3,7 @@ from settings import *
 
 FONT_RATIO = 35/680
 
+#top panel used to display score (of best performer currently alive in the a generation)
 class Panel():
 
     def __init__(self):

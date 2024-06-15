@@ -21,12 +21,15 @@ def eval_genomes(genomes,config):
 
     running = True
 
+    #game loop running a single generation
     while(running):
         for event in pygame.event.get():
             if(event.type == pygame.QUIT):
                 running = False
                 pygame.quit()
                 exit()
+                
+            #if the entire population is no more, next generation is run
             elif(get_population() == 0):
                 running = False
                 incr_gen()
