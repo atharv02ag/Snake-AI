@@ -17,11 +17,11 @@ BATCH_SIZE = 1000
 LR = 0.001
 
 #epsilon which decides probability that move taken should explore/exploit
-EPSILON = 0.38
+EPSILON = 0.36
 
 #discount factor which decides relative importance of future rewards
 GAMMA = 0.9
-MAX_GAME_COUNT = 500
+MAX_GAME_COUNT = 10000
 
 class Agent():
 
@@ -65,7 +65,7 @@ class Agent():
     def get_action(self,curr_state):
         action = [0,0,0]
         #gradually decrease epsilon as game count increases
-        self.epsilon = EPSILON*(1-(self.game_count/350))
+        self.epsilon = EPSILON*(1-(self.game_count/400))
         if(random.random() < self.epsilon):
             action[random.randint(0,2)]=1
         else:
