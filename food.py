@@ -1,6 +1,7 @@
 from settings import *
 from random import randint
 
+#food sprite class
 class Food(pygame.sprite.Sprite):
     
     def __init__(self, group):

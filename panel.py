@@ -2,6 +2,7 @@ from settings import *
 
 FONT_RATIO = 35/680
 
+#Panel to display score, game number, and maximum score achieved so far
 class Panel():
 
     def __init__(self):

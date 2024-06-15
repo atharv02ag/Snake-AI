@@ -1,5 +1,6 @@
 from settings import *
 
+#snake part sprite class
 class Part(pygame.sprite.Sprite):
 
     def __init__(self,group,color,x,y,dir):
@@ -15,6 +16,7 @@ class Part(pygame.sprite.Sprite):
     def update(self):
         self.rect.topleft = (self.x,self.y)
 
+#snake sprite class
 class Snake(pygame.sprite.Sprite):
 
     def __init__(self,group):
@@ -39,7 +41,8 @@ class Snake(pygame.sprite.Sprite):
                 temp_dir = part.dir
                 part.dir = prev_dir
                 prev_dir = temp_dir
-    
+
+    #appends new part to tail to snake. Called when food eaten
     def append_part(self, group):
         last_part = self.parts[len(self.parts)-1]
         pos = (last_part.x-last_part.dir[0]*GRID_CELL, last_part.y-last_part.dir[1]*GRID_CELL)

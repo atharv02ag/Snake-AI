@@ -15,8 +15,10 @@ class Game():
         self.snake_sprites = pygame.sprite.Group()
         self.snake = Snake(self.snake_sprites) 
     
+    #based on action input, moves the snake
     def take_action(self,action):
         #actions - left = [1,0,0], straight = [0,1,0], right = [0,0,1]
+
         clockwise = [(0,-1), (1,0), (0,1), (-1,0)] #up right down left
         index = clockwise.index(self.snake.head.dir)
         if(action[0]==1):
@@ -27,6 +29,7 @@ class Game():
             self.snake.head.dir = clockwise[(index+1)%4]
         (self.snake.v_x, self.snake.v_y) = (self.snake.head.dir[0]*GRID_CELL,self.snake.head.dir[1]*GRID_CELL)
 
+    #to check if snake crosses the boundary. If so, game ends and reward returned is -10
     def check_boundary(self):
         reward = 0
         game_over = False
@@ -39,6 +42,7 @@ class Game():
     def respawn_food(self):
         self.food.sprite = Food(self.food)
 
+    #to check if the snake eats the food. If so, food respawned, snake's length increased, reward returned is 10
     def check_food(self):
         reward = 0
         if(pygame.sprite.groupcollide(self.food,self.snake_sprites,False,False)):
@@ -48,6 +52,7 @@ class Game():
             set_score(len(self.snake.parts)-1)
         return reward
 
+    #to check if the snake collides with itself. If so, game ends, reward returned is -10
     def check_self_collision(self):
         reward = 0
         game_over = False
@@ -58,13 +63,17 @@ class Game():
                 break
         return reward, game_over
 
+    #to reset the game
     def reset(self):
         set_score(0)
         self.respawn_food()
         self.snake_sprites.empty()
         self.snake = Snake(self.snake_sprites)
 
+    #returns state as a numpy array. One-hot encoding used
     def get_state(self):
+
+        #If corresponding entry is encoded as 1, that direction is currently active
         dir = [0,0,0,0] #up right down left
         if(self.snake.head.dir == (0,-1)):
             dir[0] = 1
@@ -75,6 +84,7 @@ class Game():
         elif(self.snake.head.dir == (-1,0)):
             dir[3] = 1
         
+        #encodes relative position of food wrt snake
         food_pos = [0,0,0,0] #up right down left
         if(self.snake.head.x < self.food.sprite.x):
             food_pos[1] = 1
@@ -85,6 +95,7 @@ class Game():
         elif(self.snake.head.y > self.food.sprite.y):
             food_pos[0] = 1
 
+        #if the snake is next to a boundary, corresponding entry is encoded as 1
         boundary = [0,0,0] #left straight right
         (x,y) = (self.snake.head.x,self.snake.head.y)
 
@@ -107,7 +118,8 @@ class Game():
         
         state = dir + food_pos + boundary
         return np_array(state)
-        
+
+    #takes action and returns reward (based on whether it finds food, collides with self, etc.) and game_over state   
     def take_step(self,action):
         self.take_action(action)
         self.snake.move()
