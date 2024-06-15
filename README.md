@@ -18,6 +18,11 @@ Two seperate branches have been created (neat, DQN) showing the implementation o
 
 **Rewards** : +10 for every time it eats the food. -10 for every time it dies. No reward for just surviving.
 
+### Performance
+![plot](https://github.com/atharv02ag/Snake-AI/blob/DQN/graphs/Perf625.png)
+
+The AI struggles to figure out how to avoid self collisions and cannot grow past length of 50
+
 ## NEAT
 
 ### Packages used:-
@@ -34,5 +39,11 @@ Two seperate branches have been created (neat, DQN) showing the implementation o
 
 **Fitness Criteria** : +100 fitness awarded every time an individual eats the food. -10 for when it dies. +0.5 if a move results in the snake getting closer to the food and -0.5 when it does not.
 If an individual moves in the direction opposite to its previous direction, -1 fitness awarded.
+
+### Performance
+
+![plot](https://github.com/atharv02ag/Snake-AI/blob/neat/graphs/perf(same%202%2C%20live%3D0%2C%20timers%20removed).png)
+
+The AI takes many generations to show promising results
 
 At the end of each algorithm, a graph is displayed to show the performance of the snakes as games progress.
